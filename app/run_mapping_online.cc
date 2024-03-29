@@ -9,7 +9,7 @@
 
 /// run the lidar mapping in online mode
 
-DEFINE_string(traj_log_file, "./Log/traj.txt", "path to traj log file");
+DEFINE_string(traj_log_file, "~/ws_livox/src/faster-lio/Log/traj.txt", "path to traj log file");
 void SigHandle(int sig) {
     faster_lio::options::FLAG_EXIT = true;
     ROS_WARN("catch sig %d", sig);
@@ -44,8 +44,11 @@ int main(int argc, char **argv) {
     laser_mapping->Finish();
 
     faster_lio::Timer::PrintAll();
-    LOG(INFO) << "save trajectory to: " << FLAGS_traj_log_file;
-    laser_mapping->Savetrajectory(FLAGS_traj_log_file);
+
+    std::string trjectory_path = "/home/dongha/ws_livox/src/faster-lio/Log/traj.txt";
+
+    LOG(INFO) << "save trajectory to: " << trjectory_path;
+    laser_mapping->Savetrajectory(trjectory_path);
 
     return 0;
 }

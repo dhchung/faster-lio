@@ -3,7 +3,7 @@
 
     <arg name="rviz" default="true" />
 
-    <rosparam command="load" file="$(find faster_lio)/config/ouster64.yaml" />
+    <rosparam command="load" file="$(find faster_lio)/config/ncd_2020.yaml" />
 
     <param name="runtime_pos_log_enable" type="bool" value="0" />
     <node pkg="faster_lio" type="run_mapping_online" name="laserMapping" output="screen" /> 

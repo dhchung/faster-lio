@@ -25,6 +25,10 @@ void PointCloudPreprocess::Process(const sensor_msgs::PointCloud2::ConstPtr &msg
         case LidarType::VELO32:
             VelodyneHandler(msg);
             break;
+        
+        case LidarType::HESAI:
+            HesaiHandler(msg);
+            break;
 
         default:
             LOG(ERROR) << "Error LiDAR Type";
@@ -108,6 +112,41 @@ void PointCloudPreprocess::Oust64Handler(const sensor_msgs::PointCloud2::ConstPt
         cloud_out_.points.push_back(added_pt);
     }
 }
+
+
+void PointCloudPreprocess::HesaiHandler(const sensor_msgs::PointCloud2::ConstPtr &msg) {
+    cloud_out_.clear();
+    cloud_full_.clear();
+    pcl::PointCloud<hesai_ros::Point> pl_orig;
+    pcl::fromROSMsg(*msg, pl_orig);
+    int plsize = pl_orig.size();
+    cloud_out_.reserve(plsize);
+    double init_time = msg->header.stamp.toSec();
+
+
+    for (int i = 0; i < pl_orig.points.size(); i++) {
+        if (i % point_filter_num_ != 0) continue;
+
+        double range = pl_orig.points[i].x * pl_orig.points[i].x + pl_orig.points[i].y * pl_orig.points[i].y +
+                       pl_orig.points[i].z * pl_orig.points[i].z;
+
+        if (range < (blind_ * blind_)) continue;
+
+        Eigen::Vector3d pt_vec;
+        PointType added_pt;
+        added_pt.x = pl_orig.points[i].x;
+        added_pt.y = pl_orig.points[i].y;
+        added_pt.z = pl_orig.points[i].z;
+        added_pt.intensity = pl_orig.points[i].intensity;
+        added_pt.normal_x = 0;
+        added_pt.normal_y = 0;
+        added_pt.normal_z = 0;
+        added_pt.curvature = pl_orig.points[i].timestamp - init_time;  // curvature unit: ms
+
+        cloud_out_.points.push_back(added_pt);
+    }
+}
+
 
 void PointCloudPreprocess::VelodyneHandler(const sensor_msgs::PointCloud2::ConstPtr &msg) {
     cloud_out_.clear();

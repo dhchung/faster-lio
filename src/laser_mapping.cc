@@ -105,6 +105,8 @@ bool LaserMapping::LoadParams(ros::NodeHandle &nh) {
     } else if (lidar_type == 3) {
         preprocess_->SetLidarType(LidarType::OUST64);
         LOG(INFO) << "Using OUST 64 Lidar";
+    } else if (lidar_type == 4) {
+        preprocess_ ->SetLidarType(LidarType::HESAI);
     } else {
         LOG(WARNING) << "unknown lidar_type";
         return false;
